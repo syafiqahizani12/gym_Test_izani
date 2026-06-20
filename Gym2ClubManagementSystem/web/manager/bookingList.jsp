@@ -5,7 +5,7 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@ include file="header.jsp" %>
+<%@ include file="/header.jsp" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%
     com.lab.dao.BookingDAO dao = new com.lab.dao.BookingDAO();
@@ -18,8 +18,8 @@
         <c:forEach var="b" items="${bookings}">
             <tr>
                 <td>${b.bookingID}</td>
-                <td>${b.scheduleID}</td>
-                <td>${b.studentID}</td>
+                <td>${b.scheduleName}</td>
+                <td>${b.studentName}</td>
                 <td>${b.bookingDate}</td>
                 <td>${b.bookingStatus}</td>
             </tr>
@@ -27,4 +27,4 @@
     </tbody>
 </table>
 <a href="${pageContext.request.contextPath}/manager/dashboard.jsp" class="btn btn-secondary">Back</a>
-<%@ include file="footer.jsp" %>
+<%@ include file="/footer.jsp" %>

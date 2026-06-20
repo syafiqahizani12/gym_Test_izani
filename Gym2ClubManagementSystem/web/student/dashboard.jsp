@@ -1,147 +1,100 @@
-<%-- 
-    Document   : studentDashboard
-    Created on : 19 Jun 2026
-    Author     : ASUS
---%>
-
 <%@ page pageEncoding="UTF-8" %>
 <%@ include file="/header.jsp" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
 <%
-    com.lab.dao.MembershipDAO memDao = new com.lab.dao.MembershipDAO();
     com.lab.model.User user = (com.lab.model.User) session.getAttribute("user");
-    com.lab.model.Membership membership = memDao.getMembershipByStudentId(user.getUserId());
+    com.lab.model.Membership membership = new com.lab.dao.MembershipDAO().getMembershipByStudentId(user.getUserId());
     request.setAttribute("membership", membership);
 %>
 
-<h2>Welcome, ${sessionScope.user.fullName}!</h2>
+<header class="member-dashboard-header">
+    <div>
+        <p class="dashboard-eyebrow">Member dashboard</p>
+        <h1>Welcome back, ${sessionScope.user.fullName}</h1>
+        <p>Manage today’s gym activity and your membership from one place.</p>
+    </div>
+    <a href="${pageContext.request.contextPath}/student/profile.jsp" class="btn btn-secondary"><i class="fa-solid fa-user"></i> Profile</a>
+</header>
 
 <c:choose>
     <c:when test="${not empty membership && membership.status == 'Active'}">
-        <!-- Active Membership -->
-        <div class="alert alert-success">
-            <h4>✅ Active Membership</h4>
-            <p><strong>Type:</strong> ${membership.membershipType}</p>
-            <p><strong>Start Date:</strong> ${membership.startDate}</p>
-            <p><strong>Expiry Date:</strong> ${membership.expiryDate}</p>
-            <p><strong>Status:</strong> ${membership.status}</p>
-        </div>
-        
-        <div class="row">
-            <div class="col-md-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h5>📋 Schedules</h5>
-                        <a href="${pageContext.request.contextPath}/student/scheduleList.jsp" class="btn btn-primary">View</a>
-                    </div>
+        <c:if test="${membership.expiringSoon}">
+            <div class="alert alert-warning expiry-reminder" role="alert">
+                <i class="fa-solid fa-clock"></i>
+                <div>
+                    <strong>Your membership expires in ${membership.daysUntilExpiry} day${membership.daysUntilExpiry == 1 ? '' : 's'}.</strong>
+                    <span>Renew now to keep your bookings and gym access uninterrupted.</span>
                 </div>
+                <a href="${pageContext.request.contextPath}/student/renewMembership.jsp" class="btn btn-warning">Renew Membership</a>
             </div>
-            <div class="col-md-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h5>📖 My Bookings</h5>
-                        <a href="${pageContext.request.contextPath}/student/bookingList.jsp" class="btn btn-primary">Manage</a>
-                    </div>
-                </div>
+        </c:if>
+
+        <section class="membership-summary" aria-label="Membership summary">
+            <div>
+                <span class="summary-label">Current plan</span>
+                <strong>${membership.membershipType}</strong>
             </div>
-            <div class="col-md-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h5>✅ Attendance</h5>
-                        <a href="${pageContext.request.contextPath}/student/attendanceList.jsp" class="btn btn-primary">View</a>
-                    </div>
-                </div>
+            <div>
+                <span class="summary-label">Status</span>
+                <strong class="status-active"><i class="fa-solid fa-circle-check"></i> Active</strong>
             </div>
-            <div class="col-md-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h5>💳 Payment History</h5>
-                        <a href="${pageContext.request.contextPath}/student/paymentHistory.jsp" class="btn btn-primary">View</a>
-                    </div>
-                </div>
+            <div>
+                <span class="summary-label">Valid until</span>
+                <strong>${membership.expiryDate}</strong>
             </div>
+            <div class="summary-action">
+                <a href="${pageContext.request.contextPath}/student/membershipDetails.jsp" class="btn btn-outline-success">Membership Details</a>
+            </div>
+        </section>
+
+        <section class="dashboard-section" aria-labelledby="quickActionsTitle">
+            <div class="section-heading">
+                <div><h2 id="quickActionsTitle">Quick Actions</h2><p>Your most-used member tools.</p></div>
+            </div>
+            <div class="dashboard-actions-grid">
+                <a class="dashboard-action" href="${pageContext.request.contextPath}/student/checkIn.jsp">
+                    <i class="fa-solid fa-right-to-bracket"></i><span><strong>Check In</strong><small>Use a confirmed class booking</small></span><i class="fa-solid fa-chevron-right"></i>
+                </a>
+                <a class="dashboard-action" href="${pageContext.request.contextPath}/student/scheduleList.jsp">
+                    <i class="fa-solid fa-calendar-days"></i><span><strong>Find a Class</strong><small>Browse ${membership.membershipType} schedules</small></span><i class="fa-solid fa-chevron-right"></i>
+                </a>
+                <a class="dashboard-action" href="${pageContext.request.contextPath}/student/bookingList.jsp">
+                    <i class="fa-solid fa-bookmark"></i><span><strong>My Bookings</strong><small>Review or cancel classes</small></span><i class="fa-solid fa-chevron-right"></i>
+                </a>
+                <a class="dashboard-action" href="${pageContext.request.contextPath}/student/attendanceList.jsp">
+                    <i class="fa-solid fa-list-check"></i><span><strong>Attendance</strong><small>View your check-in history</small></span><i class="fa-solid fa-chevron-right"></i>
+                </a>
+            </div>
+        </section>
+
+        <div class="dashboard-detail-grid">
+            <%@ include file="/student/planRules.jsp" %>
+            <section class="account-links" aria-labelledby="accountTitle">
+                <h3 id="accountTitle">Account</h3>
+                <a href="${pageContext.request.contextPath}/student/paymentHistory.jsp"><i class="fa-solid fa-receipt"></i><span>Payment history</span><i class="fa-solid fa-chevron-right"></i></a>
+                <a href="${pageContext.request.contextPath}/student/renewMembership.jsp"><i class="fa-solid fa-rotate"></i><span>Renew membership</span><i class="fa-solid fa-chevron-right"></i></a>
+                <a href="${pageContext.request.contextPath}/student/changePlan.jsp"><i class="fa-solid fa-arrow-right-arrow-left"></i><span>Change membership plan</span><i class="fa-solid fa-chevron-right"></i></a>
+                <a href="${pageContext.request.contextPath}/student/profile.jsp"><i class="fa-solid fa-user-gear"></i><span>Profile settings</span><i class="fa-solid fa-chevron-right"></i></a>
+            </section>
         </div>
     </c:when>
 
     <c:when test="${not empty membership && membership.status == 'Pending'}">
-        <!-- Pending Membership -->
-        <div class="alert alert-warning">
-            <h4>⏳ Membership Pending Payment</h4>
-            <p><strong>Plan:</strong> ${membership.membershipType}</p>
-            <p><strong>Start Date:</strong> ${membership.startDate}</p>
-            <p>Please complete your payment to activate your membership.</p>
-            <a href="${pageContext.request.contextPath}/student/billing.jsp" class="btn btn-warning">Complete Payment</a>
-        </div>
+        <section class="dashboard-state">
+            <i class="fa-solid fa-hourglass-half"></i>
+            <h2>Membership awaiting approval</h2>
+            <p>Your ${membership.membershipType} plan becomes active after your payment proof is approved.</p>
+            <a href="${pageContext.request.contextPath}/student/payment.jsp" class="btn btn-primary"><i class="fa-solid fa-qrcode"></i> Open Payment</a>
+        </section>
     </c:when>
 
     <c:otherwise>
-        <!-- No Membership - Show Plans -->
-        <div class="alert alert-info">
-            <h4>🏋️ Choose Your Membership Plan</h4>
-            <p>Select a plan below to get started with UniGym!</p>
-        </div>
-
-        <!-- Membership Plans -->
-        <div class="row mt-4">
-            <!-- BASIC PLAN -->
-            <div class="col-lg-4">
-                <div class="membership-card">
-                    <h3>Basic</h3>
-                    <div class="price">RM39<span>/month</span></div>
-                    <ul>
-                        <li>✅ Gym Access</li>
-                        <li>✅ Attendance Tracking</li>
-                        <li>✅ Locker Access</li>
-                    </ul>
-                    <form action="${pageContext.request.contextPath}/billing" method="post">
-                        <input type="hidden" name="action" value="create">
-                        <input type="hidden" name="plan" value="Basic">
-                        <input type="hidden" name="amount" value="39.00">
-                        <button type="submit" class="btn btn-plan">Join Now</button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- PREMIUM PLAN -->
-            <div class="col-lg-4">
-                <div class="membership-card premium-card">
-                    <div class="popular-badge">Popular</div>
-                    <h3>Premium</h3>
-                    <div class="price">RM79<span>/month</span></div>
-                    <ul>
-                        <li>✅ Unlimited Classes</li>
-                        <li>✅ Trainer Sessions</li>
-                        <li>✅ Priority Booking</li>
-                    </ul>
-                    <form action="${pageContext.request.contextPath}/billing" method="post">
-                        <input type="hidden" name="action" value="create">
-                        <input type="hidden" name="plan" value="Premium">
-                        <input type="hidden" name="amount" value="79.00">
-                        <button type="submit" class="btn btn-plan">Join Now</button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- ELITE PLAN -->
-            <div class="col-lg-4">
-                <div class="membership-card">
-                    <h3>Elite</h3>
-                    <div class="price">RM129<span>/month</span></div>
-                    <ul>
-                        <li>✅ VIP Lounge</li>
-                        <li>✅ Personal Trainer</li>
-                        <li>✅ Full Facility Access</li>
-                    </ul>
-                    <form action="${pageContext.request.contextPath}/billing" method="post">
-                        <input type="hidden" name="action" value="create">
-                        <input type="hidden" name="plan" value="Elite">
-                        <input type="hidden" name="amount" value="129.00">
-                        <button type="submit" class="btn btn-plan">Join Now</button>
-                    </form>
-                </div>
-            </div>
-        </div>
+        <section class="dashboard-state">
+            <i class="fa-solid fa-id-card"></i>
+            <h2>No active membership</h2>
+            <p>Choose a membership plan to access schedules, bookings, and check-in.</p>
+            <a href="${pageContext.request.contextPath}/index.jsp#membership" class="btn btn-primary">View Membership Plans</a>
+        </section>
     </c:otherwise>
 </c:choose>
 

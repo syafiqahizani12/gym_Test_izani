@@ -15,8 +15,9 @@
 %>
 
 <h2>My Attendance History</h2>
+<c:if test="${param.checkin == 'success'}"><div class="alert alert-success">You checked in successfully.</div></c:if>
 
-<table class="table">
+<div class="table-responsive"><table class="table">
     <thead>
         <tr>
             <th>Schedule</th>
@@ -29,7 +30,7 @@
     <tbody>
         <c:forEach var="a" items="${attendances}">
             <tr>
-                <td>${a.scheduleID}</td>
+                <td>${a.scheduleName}</td>
                 <td>${a.checkInTime}</td>
                 <td>${a.checkOutTime}</td>
                 <td>${a.attendanceStatus}</td>
@@ -44,8 +45,9 @@
                 </td>
             </tr>
         </c:forEach>
+        <c:if test="${empty attendances}"><tr><td colspan="5" class="empty-state">No attendance records yet.</td></tr></c:if>
     </tbody>
-</table>
+</table></div>
 
 <a href="${pageContext.request.contextPath}/student/dashboard.jsp" class="btn btn-secondary">Back</a>
 

@@ -9,12 +9,13 @@ import java.util.List;
 public class BillingDAO {
 
     public boolean createBill(Billing bill) {
-        String sql = "INSERT INTO bills (studentID, amount, dueDate, status) VALUES (?,?,?,?)";
+        String sql = "INSERT INTO bills (studentID, amount, dueDate, status, planType) VALUES (?,?,?,?,?)";
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, bill.getStudentID());
             ps.setDouble(2, bill.getAmount());
             ps.setDate(3, bill.getDueDate());
             ps.setString(4, bill.getStatus());
+            ps.setString(5, bill.getPlanType());
             int result = ps.executeUpdate();
             if (result > 0) {
                 ResultSet rs = ps.getGeneratedKeys();
@@ -42,6 +43,7 @@ public class BillingDAO {
                 b.setAmount(rs.getDouble("amount"));
                 b.setDueDate(rs.getDate("dueDate"));
                 b.setStatus(rs.getString("status"));
+                b.setPlanType(rs.getString("planType"));
                 return b;
             }
         } catch (SQLException e) {
@@ -62,6 +64,7 @@ public class BillingDAO {
                 b.setAmount(rs.getDouble("amount"));
                 b.setDueDate(rs.getDate("dueDate"));
                 b.setStatus(rs.getString("status"));
+                b.setPlanType(rs.getString("planType"));
                 return b;
             }
         } catch (SQLException e) {
@@ -95,6 +98,7 @@ public class BillingDAO {
                 b.setAmount(rs.getDouble("amount"));
                 b.setDueDate(rs.getDate("dueDate"));
                 b.setStatus(rs.getString("status"));
+                b.setPlanType(rs.getString("planType"));
                 list.add(b);
             }
         } catch (SQLException e) {

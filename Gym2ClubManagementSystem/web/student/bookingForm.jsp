@@ -5,7 +5,7 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@ include file="header.jsp" %>
+<%@ include file="/header.jsp" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <h2>Booking</h2>
 <c:if test="${not empty error}"><div class="alert alert-danger">${error}</div></c:if>

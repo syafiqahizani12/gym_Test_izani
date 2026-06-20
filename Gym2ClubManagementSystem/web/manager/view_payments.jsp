@@ -1,74 +1,65 @@
-<%-- 
-    Document   : view_payments
-    Created on : Jun 20, 2026, 2:05:52 PM
-    Author     : batrisyia aliza
---%>
+<%@ page pageEncoding="UTF-8" %>
+<%@ include file="/header.jsp" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%
+    com.lab.dao.PaymentDAO paymentDao = new com.lab.dao.PaymentDAO();
+    request.setAttribute("payments", paymentDao.getAllPayments());
+%>
 
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@page import="java.util.List"%>
-<%@page import="com.lab.model.Payment"%>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Payment Reconciliation Logs</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/dashboard.css">
-</head>
-<body>
+<h2>Payment Records</h2>
+<c:if test="${param.result == 'approved'}"><div class="alert alert-success">Payment approved and membership activated.</div></c:if>
+<c:if test="${param.result == 'rejected'}"><div class="alert alert-warning">Payment proof rejected.</div></c:if>
+<c:if test="${param.result == 'failed'}"><div class="alert alert-danger">The payment could not be updated.</div></c:if>
 
-<header class="dashboard-header">
-    <div class="logo">UniGym Admin Panel</div>
-    <div class="profile-section">Gym Manager</div>
-</header>
-
-<div class="main-content container-fluid mt-4">
-    <div class="table-section text-white" style="background:#1e293b; padding:30px; border-radius:20px;">
-        <h3 class="mb-4" style="color:#22c55e;">Incoming Membership Payment Validations</h3>
-        
-        <table class="table table-dark table-hover align-middle custom-table">
-            <thead>
+<div class="table-responsive">
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>Payment ID</th>
+                <th>Member</th>
+                <th>Plan</th>
+                <th>Date</th>
+                <th>Method</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Proof</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <c:forEach var="payment" items="${payments}">
                 <tr>
-                    <th>Transaction ID</th>
-                    <th>Student Name</th>
-                    <th>Selected Plan</th>
-                    <th>Amount Paid</th>
-                    <th>Submission Timestamp</th>
-                    <th>Payment Slip Proof</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                <%
-                    List<Payment> payments = (List<Payment>) request.getAttribute("paymentList");
-                    if (payments != null && !payments.isEmpty()) {
-                        for (Payment p : payments) {
-                %>
-                <tr>
-                    <td>PAY-00<%= p.getPaymentId() %></td>
-                    <td><%= p.getStudentName() %></td>
-                    <td><span class="badge bg-secondary"><%= p.getPlanName() %></span></td>
-                    <td class="text-success fw-bold">RM <%= String.format("%.2f", p.getAmount()) %></td>
-                    <td><%= p.getPaymentDate() %></td>
+                    <td>${payment.paymentID}</td>
+                    <td>${payment.studentName}</td>
+                    <td>${payment.planType}</td>
+                    <td>${payment.paymentDate}</td>
+                    <td>${payment.paymentMethod}</td>
+                    <td>RM ${payment.amount}</td>
+                    <td><span class="badge ${payment.status == 'Approved' ? 'bg-success' : payment.status == 'Rejected' ? 'bg-danger' : 'bg-warning text-dark'}">${payment.status}</span></td>
+                    <td><a class="btn btn-sm btn-outline-light" target="_blank" href="${pageContext.request.contextPath}/payment-proof?id=${payment.paymentID}"><i class="fa-solid fa-file-arrow-up"></i> View</a></td>
                     <td>
-                        <a href="uploads/<%= p.getProofImage() %>" target="_blank">
-                            <img src="uploads/<%= p.getProofImage() %>" alt="Slip Proof" style="width:70px; height:70px; object-fit:cover; border-radius:8px; border:1px solid #22c55e;">
-                        </a>
+                        <c:if test="${payment.status == 'Pending'}">
+                            <form class="d-inline" action="${pageContext.request.contextPath}/payment" method="post">
+                                <input type="hidden" name="action" value="approve"><input type="hidden" name="paymentID" value="${payment.paymentID}">
+                                <button class="btn btn-sm btn-success" type="submit"><i class="fa-solid fa-check"></i> Approve</button>
+                            </form>
+                            <form class="d-inline" action="${pageContext.request.contextPath}/payment" method="post">
+                                <input type="hidden" name="action" value="reject"><input type="hidden" name="paymentID" value="${payment.paymentID}">
+                                <button class="btn btn-sm btn-danger" type="submit"><i class="fa-solid fa-xmark"></i> Reject</button>
+                            </form>
+                        </c:if>
                     </td>
-                    <td><span class="badge bg-warning text-dark"><%= p.getStatus() %></span></td>
                 </tr>
-                <%
-                        }
-                    } else {
-                %>
+            </c:forEach>
+            <c:if test="${empty payments}">
                 <tr>
-                    <td colspan="7" class="text-center text-muted">No transactions pending confirmation.</td>
+                    <td colspan="9" class="text-center text-muted">No payment records found.</td>
                 </tr>
-                <% } %>
-            </tbody>
-        </table>
-    </div>
+            </c:if>
+        </tbody>
+    </table>
 </div>
 
-</body>
-</html>
+<a href="${pageContext.request.contextPath}/manager/dashboard.jsp" class="btn btn-secondary">Back</a>
+
+<%@ include file="/footer.jsp" %>

@@ -311,3 +311,8 @@ section{
     }
 
 }
+
+.custom-navbar,.feature-card,.membership-card,.trainer-card,.btn-login,.btn-main,.btn-plan,.popular-badge { border-radius:8px; }
+.navbar-brand,.hero-title,.section-title h2 { letter-spacing:0; }
+.feature-card:hover,.membership-card:hover,.trainer-card:hover,.btn-main:hover,.btn-plan:hover { transform:none; }
+@media(max-width:576px) { .hero-section { min-height:88vh; } .hero-title { font-size:2.4rem; } .section-title h2 { font-size:1.8rem; } }

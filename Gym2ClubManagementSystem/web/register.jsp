@@ -5,77 +5,20 @@
 --%>
 
 <%@ page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <!DOCTYPE html>
 <html>
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Register | UniGym</title>
 
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet"
               href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-        <link rel="stylesheet" href="css/login_style.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/login_style.css">
 
-        <style>
-            .plan-selection-card {
-                background: #1e293b;
-                border-radius: 15px;
-                padding: 20px;
-                margin-bottom: 15px;
-                border: 2px solid transparent;
-                transition: all 0.3s ease;
-                cursor: pointer;
-                color: white;
-            }
-            .plan-selection-card:hover {
-                border-color: #22c55e;
-                transform: scale(1.02);
-            }
-            .plan-selection-card.selected {
-                border-color: #22c55e;
-                background: #2d3748;
-            }
-            .plan-selection-card .price {
-                font-size: 24px;
-                font-weight: bold;
-                color: #22c55e;
-            }
-            .plan-selection-card .price span {
-                font-size: 14px;
-                color: #94a3b8;
-            }
-            .plan-selection-card ul {
-                list-style: none;
-                padding: 0;
-                margin: 10px 0 0 0;
-            }
-            .plan-selection-card ul li {
-                color: #cbd5e1;
-                font-size: 14px;
-                padding: 3px 0;
-            }
-            .plan-selection-card .plan-radio {
-                display: none;
-            }
-            .plan-radio:checked + .plan-selection-card {
-                border-color: #22c55e;
-                background: #2d3748;
-                box-shadow: 0 0 20px rgba(34, 197, 94, 0.2);
-            }
-            .plan-badge {
-                display: inline-block;
-                padding: 2px 12px;
-                border-radius: 12px;
-                font-size: 11px;
-                font-weight: 600;
-                margin-left: 10px;
-            }
-            .plan-badge.popular {
-                background: #22c55e;
-                color: white;
-            }
-        </style>
     </head>
 
     <body>
@@ -98,10 +41,15 @@
                     <h2>Create Account</h2>
                     <p class="subtitle">Register to join UniGym</p>
 
+                    <c:if test="${param.error == 'duplicate'}"><div class="alert alert-danger">Email already exists. Please use another email.</div></c:if>
+                    <c:if test="${param.error == 'validation'}"><div class="alert alert-danger">Complete all fields and use a password with at least six characters.</div></c:if>
+                    <c:if test="${param.error == 'noplan'}"><div class="alert alert-danger">Select a membership plan before registering.</div></c:if>
+                    <c:if test="${param.error == 'other'}"><div class="alert alert-danger">Registration could not be completed. Please try again.</div></c:if>
+
                     <!-- REGISTER FORM -->
                     <form action="${pageContext.request.contextPath}/register" method="POST" id="registerForm">
-                        <input type="hidden" name="plan" id="selectedPlan" value="<%= request.getParameter("plan") != null ? request.getParameter("plan") : ""%>">
-                        <input type="hidden" name="amount" id="selectedAmount" value="<%= request.getParameter("amount") != null ? request.getParameter("amount") : ""%>">
+                        <input type="hidden" name="plan" id="selectedPlan" value="${param.plan}">
+                        <input type="hidden" name="amount" id="selectedAmount" value="${param.amount}">
 
                         <!-- FULL NAME -->
                         <div class="input-group-custom">
@@ -136,19 +84,20 @@
                             <input type="password"
                                    name="password"
                                    placeholder="Password"
+                                   minlength="6"
                                    required>
                         </div>
 
                         <!-- PLAN SELECTION -->
                         <div class="mt-4 mb-3">
-                            <label class="fw-bold" style="color: white;">Select Your Plan</label>
+                            <label class="fw-bold form-section-label">Select Your Plan</label>
 
                             <!-- Basic Plan -->
                             <label class="plan-radio-label">
                                 <input type="radio" name="planRadio" value="Basic" 
                                        class="plan-radio" 
                                        onclick="selectPlan('Basic', '39.00')"
-                                       <%= request.getParameter("plan") != null && request.getParameter("plan").equals("Basic") ? "checked" : ""%>>
+                                       ${param.plan == 'Basic' ? 'checked' : ''}>
                                 <div class="plan-selection-card">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <h4 class="mb-0">Basic</h4>
@@ -167,8 +116,8 @@
                                 <input type="radio" name="planRadio" value="Premium" 
                                        class="plan-radio" 
                                        onclick="selectPlan('Premium', '79.00')"
-                                       <%= request.getParameter("plan") != null && request.getParameter("plan").equals("Premium") ? "checked" : ""%>>
-                                <div class="plan-selection-card" style="border-color: #22c55e;">
+                                       ${param.plan == 'Premium' ? 'checked' : ''}>
+                                <div class="plan-selection-card featured">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <h4 class="mb-0">
                                             Premium
@@ -189,7 +138,7 @@
                                 <input type="radio" name="planRadio" value="Elite" 
                                        class="plan-radio" 
                                        onclick="selectPlan('Elite', '129.00')"
-                                       <%= request.getParameter("plan") != null && request.getParameter("plan").equals("Elite") ? "checked" : ""%>>
+                                       ${param.plan == 'Elite' ? 'checked' : ''}>
                                 <div class="plan-selection-card">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <h4 class="mb-0">Elite</h4>
@@ -205,7 +154,7 @@
                         </div>
 
                         <!-- Error Message -->
-                        <div id="planError" class="alert alert-danger" style="display: none; font-size: 14px; padding: 8px 12px;">
+                        <div id="planError" class="alert alert-danger">
                             Please select a membership plan.
                         </div>
 
@@ -230,7 +179,7 @@
             function selectPlan(plan, amount) {
                 document.getElementById('selectedPlan').value = plan;
                 document.getElementById('selectedAmount').value = amount;
-                document.getElementById('planError').style.display = 'none';
+                document.getElementById('planError').classList.remove('visible');
 
                 // Highlight selected card
                 document.querySelectorAll('.plan-selection-card').forEach(card => {
@@ -245,8 +194,8 @@
             function validatePlan() {
                 const plan = document.getElementById('selectedPlan').value;
                 if (!plan || plan === '') {
-                    document.getElementById('planError').style.display = 'block';
-                    document.getElementById('planError').textContent = '⚠️ Please select a membership plan before registering.';
+                    document.getElementById('planError').classList.add('visible');
+                    document.getElementById('planError').textContent = 'Please select a membership plan before registering.';
                     return false;
                 }
                 return true;
@@ -254,8 +203,8 @@
 
             // Auto-select if plan came from URL parameter
             document.addEventListener('DOMContentLoaded', function () {
-                const planParam = '<%= request.getParameter("plan") != null ? request.getParameter("plan") : ""%>';
-                const amountParam = '<%= request.getParameter("amount") != null ? request.getParameter("amount") : ""%>';
+                const planParam = '${param.plan}';
+                const amountParam = '${param.amount}';
 
                 if (planParam && amountParam) {
                     document.getElementById('selectedPlan').value = planParam;
@@ -273,32 +222,5 @@
             });
         </script>
 
-        <%
-            String error = request.getParameter("error");
-            if ("duplicate".equals(error)) {
-        %>
-        <script>
-            alert("Email already exists! Please use another email.");
-        </script>
-        <%
-        } else if ("other".equals(error)) {
-        %>
-        <script>
-            alert("Something went wrong. Please try again.");
-        </script>
-        <%
-        } else if ("noplan".equals(error)) {
-        %>
-        <script>
-            alert("⚠️ Please select a membership plan before registering.");
-        </script>
-        <%
-            }
-        %>
-        <%
-            System.out.println("=== REGISTER.JSP DEBUG ===");
-            System.out.println("plan param: " + request.getParameter("plan"));
-            System.out.println("amount param: " + request.getParameter("amount"));
-        %>
     </body>
 </html>

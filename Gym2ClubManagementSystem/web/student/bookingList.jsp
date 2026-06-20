@@ -5,7 +5,7 @@
 --%>
 
 <%@ page pageEncoding="UTF-8" %>
-<%@ include file="../header.jsp" %>
+<%@ include file="/header.jsp" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <%
@@ -28,7 +28,7 @@
     <tbody>
         <c:forEach var="b" items="${bookings}">
             <tr>
-                <td>${b.scheduleID}</td>
+                <td>${b.scheduleName}</td>
                 <td>${b.bookingDate}</td>
                 <td>${b.bookingStatus}</td>
                 <td>
@@ -45,4 +45,4 @@
 
 <a href="${pageContext.request.contextPath}/student/dashboard.jsp" class="btn btn-secondary">Back</a>
 
-<%@ include file="../footer.jsp" %>
+<%@ include file="/footer.jsp" %>

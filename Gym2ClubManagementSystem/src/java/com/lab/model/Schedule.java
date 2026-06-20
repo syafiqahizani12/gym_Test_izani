@@ -22,6 +22,10 @@ public class Schedule {
     private Time startTime;
     private Time endTime;
     private int capacity;
+    private String trainerName;
+    private String planType;
+    private boolean checkInOpen;
+    private boolean checkedIn;
 
     public Schedule() {
     }
@@ -82,4 +86,14 @@ public class Schedule {
     public void setCapacity(int capacity) {
         this.capacity = capacity;
     }
+
+    public String getTrainerName() { return trainerName; }
+    public void setTrainerName(String trainerName) { this.trainerName = trainerName; }
+    public String getPlanType() { return planType; }
+    public void setPlanType(String planType) { this.planType = planType; }
+    public boolean isCheckInOpen() { return checkInOpen; }
+    public void setCheckInOpen(boolean checkInOpen) { this.checkInOpen = checkInOpen; }
+    public boolean isCheckedIn() { return checkedIn; }
+    public void setCheckedIn(boolean checkedIn) { this.checkedIn = checkedIn; }
+    public boolean isFull() { return capacity <= 0; }
 }

@@ -9,6 +9,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Login | UniGym</title>
 
         <!-- Bootstrap -->
@@ -19,7 +20,7 @@
               href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
         <!-- CSS -->
-        <link rel="stylesheet" href="css/login_style.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/login_style.css">
 
     </head>
 
@@ -58,7 +59,7 @@
                         Login to continue your fitness journey
                     </p>
 
-                    <form action="${pageContext.request.contextPath}/LoginServlet" method="POST">
+                    <form action="${pageContext.request.contextPath}/login" method="POST">
 
                         <!-- EMAIL -->
                         <div class="input-group-custom">

@@ -18,9 +18,9 @@ import javax.servlet.http.HttpSession;
 @WebServlet("/register")
 public class RegisterServlet extends HttpServlet {
 
-    private UserDAO userDao = new UserDAO();
-    private MembershipDAO membershipDao = new MembershipDAO();
-    private BillingDAO billingDao = new BillingDAO();
+    private final UserDAO userDao = new UserDAO();
+    private final MembershipDAO membershipDao = new MembershipDAO();
+    private final BillingDAO billingDao = new BillingDAO();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -31,79 +31,75 @@ public class RegisterServlet extends HttpServlet {
         String phone = request.getParameter("phone");
         String password = request.getParameter("password");
         String plan = request.getParameter("plan");
-        String amountStr = request.getParameter("amount");
 
         System.out.println("=== REGISTER ATTEMPT ===");
-        System.out.println("Full Name: " + fullName);
-        System.out.println("Email: " + email);
-        System.out.println("Plan: " + plan);
-        System.out.println("Amount: " + amountStr);
+        System.out.println("Email: " + email + ", plan: " + plan);
 
-        // Validate plan
-        if (plan == null || plan.isEmpty() || amountStr == null || amountStr.isEmpty()) {
-            System.out.println("❌ Plan or amount is null!");
+        if (isBlank(fullName) || isBlank(email) || isBlank(phone) || password == null || password.length() < 6) {
+            response.sendRedirect(request.getContextPath() + "/register.jsp?error=validation");
+            return;
+        }
+
+        Double amount = getPlanAmount(plan);
+        if (amount == null) {
             response.sendRedirect(request.getContextPath() + "/register.jsp?error=noplan");
             return;
         }
 
-        // Check if email exists
-        User existingUser = userDao.getUserByEmail(email);
-        if (existingUser != null) {
-            System.out.println("❌ Email already exists!");
+        if (userDao.getUserByEmail(email.trim()) != null) {
             response.sendRedirect(request.getContextPath() + "/register.jsp?error=duplicate");
             return;
         }
 
-        // Create user
-        String role = "Member";
-        User user = new User(0, fullName, email, password, phone, role);
-        boolean registered = userDao.register(user);
-        System.out.println("Step 1 - User registered: " + registered);
-        if (!registered) {
+        User user = new User(0, fullName.trim(), email.trim(), password, phone.trim(), "Member");
+        if (!userDao.register(user)) {
             response.sendRedirect(request.getContextPath() + "/register.jsp?error=other");
             return;
         }
 
-        // Get new user
-        User newUser = userDao.getUserByEmail(email);
+        User newUser = userDao.getUserByEmail(email.trim());
         if (newUser == null) {
-            System.out.println("❌ Could not retrieve new user!");
             response.sendRedirect(request.getContextPath() + "/register.jsp?error=other");
             return;
         }
-        int studentId = newUser.getUserId();
-        System.out.println("Step 2 - New user ID: " + studentId);
 
-        // Create bill
-        double amount = Double.parseDouble(amountStr);
         Billing bill = new Billing();
-        bill.setStudentID(studentId);
+        bill.setStudentID(newUser.getUserId());
         bill.setAmount(amount);
         bill.setDueDate(Date.valueOf(LocalDate.now().plusDays(7)));
         bill.setStatus("Pending");
+        bill.setPlanType(plan);
 
         boolean billCreated = billingDao.createBill(bill);
-        System.out.println("Step 3 - Bill created: " + billCreated);
-        if (!billCreated) {
-            System.out.println("❌ Bill creation FAILED!");
+        boolean membershipCreated = membershipDao.createPendingMembership(newUser.getUserId(), plan, amount);
+        System.out.println("Bill created=" + billCreated + ", membership created=" + membershipCreated);
+
+        if (!billCreated || !membershipCreated) {
             response.sendRedirect(request.getContextPath() + "/register.jsp?error=other");
             return;
         }
 
-        // Create pending membership
-        boolean membershipCreated = membershipDao.createPendingMembership(studentId, plan, amount);
-        System.out.println("Step 4 - Membership created (Pending): " + membershipCreated);
-        if (!membershipCreated) {
-            System.out.println("❌ Membership creation FAILED!");
-            response.sendRedirect(request.getContextPath() + "/register.jsp?error=other");
-            return;
-        }
-
-        // Store session
         HttpSession session = request.getSession();
         session.setAttribute("user", newUser);
+        session.setAttribute("user_id", newUser.getUserId());
+        session.setAttribute("name", newUser.getFullName());
+        response.sendRedirect(request.getContextPath() + "/student/payment.jsp");
+    }
 
-        System.out.println("✅ Registration COMPLETE! Redirecting to billing.");
-        response.sendRedirect(request.getContextPath() + "/student/billing.jsp");
+    private boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
+    }
+
+    private Double getPlanAmount(String plan) {
+        if ("Basic".equalsIgnoreCase(plan)) {
+            return 39.00;
+        }
+        if ("Premium".equalsIgnoreCase(plan)) {
+            return 79.00;
+        }
+        if ("Elite".equalsIgnoreCase(plan)) {
+            return 129.00;
+        }
+        return null;
     }
 }

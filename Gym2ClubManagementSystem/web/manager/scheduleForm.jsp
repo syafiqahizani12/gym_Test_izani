@@ -5,8 +5,12 @@
 --%>
 
 <%@ page pageEncoding="UTF-8" %>
-<%@ include file="../header.jsp" %>
+<%@ include file="/header.jsp" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%
+    request.setAttribute("trainers", new com.lab.dao.UserDAO().getUsersByRole("Trainer"));
+    request.setAttribute("today", java.time.LocalDate.now().toString());
+%>
 
 <h2>
     <c:choose>
@@ -15,6 +19,8 @@
     </c:choose>
     Schedule
 </h2>
+<c:if test="${param.error == 'validation'}"><div class="alert alert-danger">Check the plan, trainer, date, time, and capacity values.</div></c:if>
+<c:if test="${param.error == 'past'}"><div class="alert alert-danger">The class start time must be in the future.</div></c:if>
 
 <form action="${pageContext.request.contextPath}/schedule" method="post">
     <input type="hidden" name="action" value="${param.action == 'edit' ? 'update' : 'create'}">
@@ -28,13 +34,29 @@
     </div>
 
     <div class="mb-3">
-        <label>Trainer ID</label>
-        <input type="number" name="trainerID" class="form-control" value="${schedule.trainerID}" required>
+        <label for="planType">Membership Plan</label>
+        <select id="planType" name="planType" class="form-select" required>
+            <option value="">Select eligible plan</option>
+            <option value="Basic" ${schedule.planType == 'Basic' ? 'selected' : ''}>Basic</option>
+            <option value="Premium" ${schedule.planType == 'Premium' ? 'selected' : ''}>Premium</option>
+            <option value="Elite" ${schedule.planType == 'Elite' ? 'selected' : ''}>Elite</option>
+        </select>
+        <div class="form-text">Only active members on this plan can view and book the class.</div>
+    </div>
+
+    <div class="mb-3">
+        <label for="trainerID">Trainer</label>
+        <select id="trainerID" name="trainerID" class="form-select" required>
+            <option value="">Select trainer</option>
+            <c:forEach var="trainer" items="${trainers}">
+                <option value="${trainer.userId}" ${schedule.trainerID == trainer.userId ? 'selected' : ''}>${trainer.fullName}</option>
+            </c:forEach>
+        </select>
     </div>
 
     <div class="mb-3">
         <label>Date</label>
-        <input type="date" name="classDate" class="form-control" value="${schedule.classDate}" required>
+        <input type="date" name="classDate" class="form-control" min="${today}" value="${schedule.classDate}" required>
     </div>
 
     <div class="mb-3">
@@ -49,7 +71,7 @@
 
     <div class="mb-3">
         <label>Capacity</label>
-        <input type="number" name="capacity" class="form-control" value="${schedule.capacity}" required>
+        <input type="number" name="capacity" class="form-control" min="1" value="${schedule.capacity}" required>
     </div>
 
     <button type="submit" class="btn btn-primary">Save</button>

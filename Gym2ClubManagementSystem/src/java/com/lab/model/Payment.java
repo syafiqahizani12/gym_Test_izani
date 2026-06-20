@@ -10,6 +10,10 @@ public class Payment {
     private String paymentMethod;
     private double amount;
     private String status;
+    private String proofPath;
+    private String proofFileName;
+    private String studentName;
+    private String planType;
 
     public Payment() {
     }
@@ -61,4 +65,13 @@ public class Payment {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    public String getProofPath() { return proofPath; }
+    public void setProofPath(String proofPath) { this.proofPath = proofPath; }
+    public String getProofFileName() { return proofFileName; }
+    public void setProofFileName(String proofFileName) { this.proofFileName = proofFileName; }
+    public String getStudentName() { return studentName; }
+    public void setStudentName(String studentName) { this.studentName = studentName; }
+    public String getPlanType() { return planType; }
+    public void setPlanType(String planType) { this.planType = planType; }
 }

@@ -1,139 +1,102 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package com.lab.controller;
 
 import com.lab.dao.AttendanceDAO;
-import com.lab.model.Attendance;
 import com.lab.dao.MembershipDAO;
+import com.lab.model.User;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
-/**
- *
- * @author DELL
- */
 @WebServlet("/attendance")
-
 public class AttendanceServlet extends HttpServlet {
-private AttendanceDAO dao = new AttendanceDAO();
-    private MembershipDAO memDao = new MembershipDAO();
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet AttendanceServlet</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet AttendanceServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
+    private final AttendanceDAO attendanceDao = new AttendanceDAO();
+    private final MembershipDAO membershipDao = new MembershipDAO();
+
     @Override
-  protected void doGet(HttpServletRequest request,
-                         HttpServletResponse response)
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        AttendanceDAO dao = new AttendanceDAO();
-
-        List<Attendance> attendanceList =
-                dao.getAllAttendance();
-
-        request.setAttribute("attendanceList", attendanceList);
-
-        request.getRequestDispatcher(
-                "trainer/trainer_attendance.jsp")
-                .forward(request, response);
-
+        response.sendRedirect(request.getContextPath() + "/student/attendanceList.jsp");
     }
-
-
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
- 
-    
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
+        System.out.println("=== ATTENDANCE ACTION === " + action);
+
         if ("checkin".equals(action)) {
-            int studentId = Integer.parseInt(request.getParameter("studentID"));
-            int scheduleId = Integer.parseInt(request.getParameter("scheduleID"));
-            if (!memDao.isActive(studentId)) {
-                request.setAttribute("error", "Membership is not active.");
-                request.getRequestDispatcher("views/student/dashboard.jsp").forward(request, response);
-                return;
-            }
-            if (dao.checkIn(studentId, scheduleId)) {
-                response.sendRedirect("views/student/attendanceList.jsp");
-            } else {
-                request.setAttribute("error", "Check-in failed.");
-                request.getRequestDispatcher("views/student/dashboard.jsp").forward(request, response);
-            }
+            checkIn(request, response);
         } else if ("checkout".equals(action)) {
-            int attId = Integer.parseInt(request.getParameter("attendanceID"));
-            dao.checkOut(attId);
-            response.sendRedirect("views/student/attendanceList.jsp");
+            User user = currentUser(request);
+            if (user == null) { response.sendRedirect(request.getContextPath() + "/login.jsp"); return; }
+            int attendanceId = parseInt(request.getParameter("attendanceID"));
+            attendanceDao.checkOut(attendanceId, user.getUserId());
+            response.sendRedirect(request.getContextPath() + "/student/attendanceList.jsp");
         } else if ("mark".equals(action)) {
-            int scheduleId = Integer.parseInt(request.getParameter("scheduleID"));
-            int studentId = Integer.parseInt(request.getParameter("studentID"));
-            String status = request.getParameter("attendanceStatus");
-            if (dao.markAttendanceByTrainer(scheduleId, studentId, status)) {
-                response.sendRedirect("views/trainer/attendanceList.jsp");
-            } else {
-                request.setAttribute("error", "Cannot mark attendance (class not started or error).");
-                request.getRequestDispatcher("views/trainer/attendanceForm.jsp").forward(request, response);
-            }
+            markByTrainer(request, response);
+        } else {
+            response.sendRedirect(request.getContextPath() + "/student/dashboard.jsp");
         }
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
+    private User currentUser(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        return session == null ? null : (User) session.getAttribute("user");
+    }
 
+    private void checkIn(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        User user = currentUser(request);
+        if (user == null) {
+            response.sendRedirect(request.getContextPath() + "/login.jsp");
+            return;
+        }
+
+        int scheduleId = parseInt(request.getParameter("scheduleID"));
+        if (!membershipDao.isActive(user.getUserId())) {
+            response.sendRedirect(request.getContextPath() + "/student/expired.jsp?reason=inactive");
+            return;
+        }
+
+        AttendanceDAO.CheckInResult result = attendanceDao.checkIn(user.getUserId(), scheduleId);
+        System.out.println("Student check-in userID=" + user.getUserId() + ", scheduleID=" + scheduleId + ", result=" + result);
+        switch (result) {
+            case SUCCESS:
+                response.sendRedirect(request.getContextPath() + "/student/attendanceList.jsp?checkin=success"); break;
+            case ALREADY_CHECKED_IN:
+                response.sendRedirect(request.getContextPath() + "/student/checkIn.jsp?error=already"); break;
+            case NOT_BOOKED:
+                response.sendRedirect(request.getContextPath() + "/student/checkIn.jsp?error=booking"); break;
+            case OUTSIDE_CLASS_TIME:
+                response.sendRedirect(request.getContextPath() + "/student/checkIn.jsp?error=time"); break;
+            default:
+                response.sendRedirect(request.getContextPath() + "/student/checkIn.jsp?error=failed");
+        }
+    }
+
+    private void markByTrainer(HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException {
+        User trainer = currentUser(request);
+        if (trainer == null) { response.sendRedirect(request.getContextPath() + "/login.jsp"); return; }
+        if (!"Trainer".equals(trainer.getRole())) { response.sendError(HttpServletResponse.SC_FORBIDDEN); return; }
+        int scheduleId = parseInt(request.getParameter("scheduleID"));
+        int studentId = parseInt(request.getParameter("studentID"));
+        String status = request.getParameter("attendanceStatus");
+
+        if (attendanceDao.markAttendanceByTrainer(scheduleId, studentId, trainer.getUserId(), status)) {
+            response.sendRedirect(request.getContextPath() + "/trainer/attendanceList.jsp?mark=success");
+        } else {
+            request.setAttribute("error", "Attendance can only be marked during class time for a confirmed participant in your class.");
+            request.getRequestDispatcher("/trainer/attendanceForm.jsp").forward(request, response);
+        }
+    }
+
+    private int parseInt(String value) {
+        try { return Integer.parseInt(value); } catch (Exception e) { return -1; }
+    }
 }
-

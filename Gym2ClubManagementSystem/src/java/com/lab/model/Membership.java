@@ -9,6 +9,8 @@ package com.lab.model;
  * @author ASUS
  */
 import java.sql.Date;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 public class Membership {
 
@@ -18,6 +20,7 @@ public class Membership {
     private Date startDate;
     private Date expiryDate;
     private String status;
+    private String studentName;
 
     public Membership() {
     }
@@ -69,5 +72,18 @@ public class Membership {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getStudentName() { return studentName; }
+    public void setStudentName(String studentName) { this.studentName = studentName; }
+
+    public long getDaysUntilExpiry() {
+        if (expiryDate == null) return 0;
+        return ChronoUnit.DAYS.between(LocalDate.now(), expiryDate.toLocalDate());
+    }
+
+    public boolean isExpiringSoon() {
+        long days = getDaysUntilExpiry();
+        return "Active".equalsIgnoreCase(status) && days >= 0 && days <= 7;
     }
 }

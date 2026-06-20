@@ -13,7 +13,11 @@
     request.setAttribute("memberships", dao.getAllMemberships());
 %>
 
-<h2>Membership List (View Only)</h2>
+<h2>Membership List</h2>
+
+<c:if test="${param.approved == 'true'}">
+    <div class="alert alert-success">Membership approved.</div>
+</c:if>
 
 <table class="table table-striped">
     <thead>
@@ -24,17 +28,24 @@
             <th>Start</th>
             <th>Expiry</th>
             <th>Status</th>
+            <th>Action</th>
         </tr>
     </thead>
     <tbody>
         <c:forEach var="m" items="${memberships}">
             <tr>
                 <td>${m.membershipID}</td>
-                <td>${m.studentID}</td>
+                <td>${m.studentName}</td>
                 <td>${m.membershipType}</td>
                 <td>${m.startDate}</td>
                 <td>${m.expiryDate}</td>
                 <td>${m.status}</td>
+                <td>
+                    <c:choose>
+                        <c:when test="${m.status == 'Pending'}"><a class="btn btn-sm btn-success" href="${pageContext.request.contextPath}/manager/view_payments.jsp"><i class="fa-solid fa-receipt"></i> Review Payment</a></c:when>
+                        <c:otherwise><span class="text-muted">Read-only</span></c:otherwise>
+                    </c:choose>
+                </td>
             </tr>
         </c:forEach>
     </tbody>

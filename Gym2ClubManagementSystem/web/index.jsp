@@ -5,10 +5,12 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Gym Club Management System</title>
 
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -16,14 +18,11 @@
         <link rel="stylesheet"
               href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
-        <link rel="stylesheet" href="css/index_style.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/index_style.css">
     </head>
 
     <body>
-        <%
-            String name = (String) session.getAttribute("name");
-            boolean isLoggedIn = (name != null && !name.trim().isEmpty());
-        %>
+        <c:set var="isLoggedIn" value="${not empty sessionScope.user}" />
         <nav class="navbar navbar-expand-lg navbar-dark custom-navbar fixed-top">
             <div class="container">
 
@@ -53,22 +52,25 @@
                         </li>
 
                         <li class="nav-item ms-3">
-                            <% if (isLoggedIn) {%>
+                            <c:choose>
+                                <c:when test="${isLoggedIn}">
                             <div class="dropdown">
                                 <button class="btn btn-login dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fa fa-user-circle me-1"></i> Hi, <%= name%>
+                                    <i class="fa fa-user-circle me-1"></i> Hi, ${sessionScope.user.fullName}
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-dark">
-                                    <li><a class="dropdown-item" href="student/student_attendance.jsp">My Dashboard</a></li>
+                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/student/dashboard.jsp">My Dashboard</a></li>
                                     <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item text-danger" href="LogoutServlet">Logout</a></li>
+                                    <li><a class="dropdown-item text-danger" href="${pageContext.request.contextPath}/logout">Logout</a></li>
                                 </ul>
                             </div>
-                            <% } else { %>
+                                </c:when>
+                                <c:otherwise>
                             <a class="btn btn-login" href="login.jsp">
                                 Login
                             </a>
-                            <% } %>
+                                </c:otherwise>
+                            </c:choose>
                         </li>
 
                     </ul>
@@ -98,15 +100,18 @@
 
                         <div class="hero-buttons">
 
-                            <% if (isLoggedIn) { %>
-                            <a href="student/student_attendance.jsp" class="btn btn-main">
+                            <c:choose>
+                                <c:when test="${isLoggedIn}">
+                            <a href="${pageContext.request.contextPath}/student/dashboard.jsp" class="btn btn-main">
                                 Go to Dashboard &rarr;
                             </a>
-                            <% } else { %>
+                                </c:when>
+                                <c:otherwise>
                             <a href="login.jsp" class="btn btn-main">
                                 Get Started
                             </a>
-                            <% } %>
+                                </c:otherwise>
+                            </c:choose>
 
                             <a href="#membership" class="btn btn-outline-light">
                                 Explore Plans
@@ -207,11 +212,14 @@
                                 <li>Locker Access</li>
                             </ul>
 
-                            <% if (isLoggedIn) { %>
-                            <a href="student/checkout.jsp?plan=Basic&amount=39.00" class="btn btn-plan">Pay & Upgrade Now</a>
-                            <% } else { %>
-                            <a href="register.jsp?plan=Basic&amount=39.00" class="btn btn-plan">Join Now</a>
-                            <% } %>
+                            <c:choose>
+                                <c:when test="${isLoggedIn}">
+                            <a href="${pageContext.request.contextPath}/student/dashboard.jsp" class="btn btn-plan">Manage Plan</a>
+                                </c:when>
+                                <c:otherwise>
+                            <a href="${pageContext.request.contextPath}/register.jsp?plan=Basic&amount=39.00" class="btn btn-plan">Join Now</a>
+                                </c:otherwise>
+                            </c:choose>
 
                         </div>
                     </div>
@@ -235,11 +243,14 @@
                                 <li>Priority Booking</li>
                             </ul>
 
-                            <% if (isLoggedIn) { %>
-                            <a href="student/checkout.jsp?plan=Premium&amount=79.00" class="btn btn-plan">Pay & Upgrade Now</a>
-                            <% } else { %>
-                            <a href="register.jsp?plan=Premium&amount=79.00" class="btn btn-plan">Join Now</a>
-                            <% } %>
+                            <c:choose>
+                                <c:when test="${isLoggedIn}">
+                            <a href="${pageContext.request.contextPath}/student/dashboard.jsp" class="btn btn-plan">Manage Plan</a>
+                                </c:when>
+                                <c:otherwise>
+                            <a href="${pageContext.request.contextPath}/register.jsp?plan=Premium&amount=79.00" class="btn btn-plan">Join Now</a>
+                                </c:otherwise>
+                            </c:choose>
 
                         </div>
                     </div>
@@ -259,11 +270,14 @@
                                 <li>Full Facility Access</li>
                             </ul>
 
-                            <% if (isLoggedIn) { %>
-                            <a href="student/checkout.jsp?plan=Elite&amount=129.00" class="btn btn-plan">Pay & Upgrade Now</a>
-                            <% } else { %>
-                            <a href="register.jsp?plan=Elite&amount=129.00" class="btn btn-plan">Join Now</a>
-                            <% } %>
+                            <c:choose>
+                                <c:when test="${isLoggedIn}">
+                            <a href="${pageContext.request.contextPath}/student/dashboard.jsp" class="btn btn-plan">Manage Plan</a>
+                                </c:when>
+                                <c:otherwise>
+                            <a href="${pageContext.request.contextPath}/register.jsp?plan=Elite&amount=129.00" class="btn btn-plan">Join Now</a>
+                                </c:otherwise>
+                            </c:choose>
 
                         </div>
                     </div>

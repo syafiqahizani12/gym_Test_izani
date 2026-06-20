@@ -305,3 +305,12 @@ body {
         align-items: center;
     }
 }
+
+#planError.visible { display: block; }
+
+.plan-selection-card.featured { border-color:#22c55e; }
+.form-section-label { color:#f8fafc; }
+.input-group-custom,.plan-selection-card,.btn-login,#planError { border-radius:8px; }
+.left-content h1,.login-box h2 { letter-spacing:0; }
+.btn-login:hover,.plan-selection-card:hover { transform:none; }
+@media(max-width:576px) { .right-panel { padding:24px 16px; } .login-box h2 { font-size:2rem; } .plan-selection-card { padding:14px; } }

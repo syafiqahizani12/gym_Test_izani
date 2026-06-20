@@ -1,5 +1,5 @@
 <%@ page pageEncoding="UTF-8" %>
-<%@ include file="../headerS.jsp" %>
+<%@ include file="/header.jsp" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <%
@@ -57,4 +57,4 @@
     </div>
 </c:if>
 
-<%@ include file="../footer.jsp" %>
+<%@ include file="/footer.jsp" %>

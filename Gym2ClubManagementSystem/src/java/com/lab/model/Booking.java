@@ -9,6 +9,8 @@ package com.lab.model;
  * @author ASUS
  */
 import java.sql.Timestamp;
+import java.sql.Date;
+import java.sql.Time;
 
 public class Booking {
 
@@ -17,6 +19,13 @@ public class Booking {
     private int studentID;
     private Timestamp bookingDate;
     private String bookingStatus;
+    private String studentName;
+    private String scheduleName;
+    private Date classDate;
+    private Time startTime;
+    private Time endTime;
+    private String attendanceStatus;
+    private boolean attendanceOpen;
 
     public Booking() {
     }
@@ -61,4 +70,19 @@ public class Booking {
     public void setBookingStatus(String bookingStatus) {
         this.bookingStatus = bookingStatus;
     }
+
+    public String getStudentName() { return studentName; }
+    public void setStudentName(String studentName) { this.studentName = studentName; }
+    public String getScheduleName() { return scheduleName; }
+    public void setScheduleName(String scheduleName) { this.scheduleName = scheduleName; }
+    public Date getClassDate() { return classDate; }
+    public void setClassDate(Date classDate) { this.classDate = classDate; }
+    public Time getStartTime() { return startTime; }
+    public void setStartTime(Time startTime) { this.startTime = startTime; }
+    public Time getEndTime() { return endTime; }
+    public void setEndTime(Time endTime) { this.endTime = endTime; }
+    public String getAttendanceStatus() { return attendanceStatus; }
+    public void setAttendanceStatus(String attendanceStatus) { this.attendanceStatus = attendanceStatus; }
+    public boolean isAttendanceOpen() { return attendanceOpen; }
+    public void setAttendanceOpen(boolean attendanceOpen) { this.attendanceOpen = attendanceOpen; }
 }

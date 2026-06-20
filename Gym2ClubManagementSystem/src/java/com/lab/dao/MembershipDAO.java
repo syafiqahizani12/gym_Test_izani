@@ -26,7 +26,8 @@ public class MembershipDAO {
 
     public List<Membership> getAllMemberships() {
         List<Membership> list = new ArrayList<>();
-        String sql = "SELECT * FROM membership";
+        String sql = "SELECT m.*, u.full_name AS studentName FROM membership m "
+                + "JOIN users u ON m.studentID=u.user_id ORDER BY m.membershipID DESC";
         try (Connection conn = DBConnection.getConnection(); Statement st = conn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
             while (rs.next()) {
                 Membership m = new Membership();
@@ -36,6 +37,7 @@ public class MembershipDAO {
                 m.setStartDate(rs.getDate("startDate"));
                 m.setExpiryDate(rs.getDate("expiryDate"));
                 m.setStatus(rs.getString("status"));
+                m.setStudentName(rs.getString("studentName"));
                 list.add(m);
             }
         } catch (SQLException e) {
@@ -115,7 +117,9 @@ public class MembershipDAO {
     public boolean isActive(int studentId) {
         Membership m = getMembershipByStudentId(studentId);
         if (m == null) return false;
-        return "Active".equals(m.getStatus()) && m.getExpiryDate().after(new Date(System.currentTimeMillis()));
+        return "Active".equalsIgnoreCase(m.getStatus())
+                && m.getExpiryDate() != null
+                && !m.getExpiryDate().before(new Date(System.currentTimeMillis()));
     }
 
     // ✅ CREATE PENDING MEMBERSHIP
@@ -140,6 +144,19 @@ public class MembershipDAO {
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, status);
             ps.setInt(2, studentId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean approveMembership(int membershipId) {
+        String sql = "UPDATE membership SET status='Active', startDate=?, expiryDate=? WHERE membershipID=? AND status='Pending'";
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setDate(1, Date.valueOf(LocalDate.now()));
+            ps.setDate(2, Date.valueOf(LocalDate.now().plusMonths(1)));
+            ps.setInt(3, membershipId);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();

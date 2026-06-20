@@ -14,17 +14,18 @@
 %>
 <h2>My Schedules</h2>
 <table class="table">
-    <thead><tr><th>Class</th><th>Date</th><th>Time</th><th>Capacity</th></tr></thead>
+    <thead><tr><th>Class</th><th>Plan</th><th>Date</th><th>Time</th><th>Availability</th></tr></thead>
     <tbody>
         <c:forEach var="s" items="${schedules}">
             <tr>
                 <td>${s.className}</td>
+                <td><span class="plan-tier plan-tier-${s.planType.toLowerCase()}">${s.planType}</span></td>
                 <td>${s.classDate}</td>
                 <td>${s.startTime} - ${s.endTime}</td>
-                <td>${s.capacity}</td>
+                <td><c:choose><c:when test="${s.full}"><span class="badge bg-danger">Full</span></c:when><c:otherwise><span class="badge bg-success">${s.capacity} spaces</span></c:otherwise></c:choose></td>
             </tr>
         </c:forEach>
     </tbody>
 </table>
 <a href="${pageContext.request.contextPath}/trainer/dashboard.jsp" class="btn btn-secondary">Back</a>
-<%@ include file="../footer.jsp" %>
+<%@ include file="/footer.jsp" %>

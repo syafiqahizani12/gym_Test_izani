@@ -5,6 +5,8 @@
 
 package com.lab.filter;
 
+import com.lab.dao.MembershipDAO;
+import com.lab.model.Membership;
 import com.lab.model.User;
 import java.io.IOException;
 import javax.servlet.Filter;
@@ -68,6 +70,32 @@ public class AuthFilter implements Filter {
             System.out.println("ACCESS DENIED: " + role + " is not Manager");
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied: Managers only");
             return;
+        }
+
+        if ("Member".equalsIgnoreCase(role) && uri.contains("/student/")) {
+            boolean statusPage = uri.endsWith("/pending.jsp")
+                    || uri.endsWith("/expired.jsp")
+                    || uri.endsWith("/billing.jsp")
+                    || uri.endsWith("/payment.jsp")
+                    || uri.endsWith("/renewMembership.jsp")
+                    || uri.endsWith("/profile.jsp");
+
+            if (!statusPage) {
+                MembershipDAO membershipDao = new MembershipDAO();
+                Membership membership = membershipDao.getMembershipByStudentId(user.getUserId());
+                if (membership == null) {
+                    response.sendRedirect(contextPath + "/index.jsp?needPlan=true");
+                    return;
+                }
+                if ("Pending".equalsIgnoreCase(membership.getStatus())) {
+                    response.sendRedirect(contextPath + "/student/pending.jsp");
+                    return;
+                }
+                if (!membershipDao.isActive(user.getUserId())) {
+                    response.sendRedirect(contextPath + "/student/expired.jsp");
+                    return;
+                }
+            }
         }
 
         System.out.println("ACCESS GRANTED for: " + role);

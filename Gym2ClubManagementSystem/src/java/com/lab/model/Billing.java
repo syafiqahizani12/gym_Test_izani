@@ -9,6 +9,7 @@ public class Billing {
     private double amount;
     private Date dueDate;
     private String status;
+    private String planType;
 
     public Billing() {
     }
@@ -52,4 +53,7 @@ public class Billing {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    public String getPlanType() { return planType; }
+    public void setPlanType(String planType) { this.planType = planType; }
 }

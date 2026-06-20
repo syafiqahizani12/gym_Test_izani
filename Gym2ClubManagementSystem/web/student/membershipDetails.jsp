@@ -25,6 +25,8 @@
             <tr><th>Expiry Date</th><td>${membership.expiryDate}</td></tr>
             <tr><th>Status</th><td>${membership.status}</td></tr>
         </table>
+        <a href="${pageContext.request.contextPath}/student/changePlan.jsp" class="btn btn-primary mb-3"><i class="fa-solid fa-arrow-right-arrow-left"></i> Change Plan</a>
+        <%@ include file="/student/planRules.jsp" %>
     </c:when>
     <c:otherwise><p>No membership found.</p></c:otherwise>
 </c:choose>

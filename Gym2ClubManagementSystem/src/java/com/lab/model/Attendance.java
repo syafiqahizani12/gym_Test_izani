@@ -19,6 +19,8 @@ public class Attendance {
     private Timestamp checkInTime;
     private Timestamp checkOutTime;
     private String attendanceStatus;
+    private String studentName;
+    private String scheduleName;
 
     public Attendance() {}
 
@@ -35,4 +37,8 @@ public class Attendance {
     public void setCheckOutTime(Timestamp checkOutTime) { this.checkOutTime = checkOutTime; }
     public String getAttendanceStatus() { return attendanceStatus; }
     public void setAttendanceStatus(String attendanceStatus) { this.attendanceStatus = attendanceStatus; }
+    public String getStudentName() { return studentName; }
+    public void setStudentName(String studentName) { this.studentName = studentName; }
+    public String getScheduleName() { return scheduleName; }
+    public void setScheduleName(String scheduleName) { this.scheduleName = scheduleName; }
 }
