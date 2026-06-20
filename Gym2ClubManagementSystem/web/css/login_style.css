@@ -1,0 +1,307 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : 26 May 2026, 5:24:07 pm
+    Author     : DELL
+*/
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #0f172a;
+    /* ✅ REMOVED: overflow: hidden; → NOW SCROLLING WORKS! */
+    min-height: 100vh;
+}
+
+/* MAIN CONTAINER */
+.login-container {
+    width: 100%;
+    min-height: 100vh;          /* Changed from height to min-height */
+    display: flex;
+    overflow-y: auto;           /* Allow scrolling on container */
+    background: #111827;
+}
+
+/* LEFT PANEL – Fixed on desktop */
+.left-panel {
+    width: 60%;
+    min-height: 100vh;          /* Full height */
+    position: sticky;           /* Stays in place while scrolling */
+    top: 0;
+    background:
+        linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)),
+        url('https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1600');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    padding: 80px;
+    flex-shrink: 0;             /* Prevent shrinking */
+}
+
+.left-content {
+    position: relative;
+    z-index: 2;
+    color: white;
+    max-width: 550px;
+}
+
+.left-content h1 {
+    font-size: 70px;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 20px;
+    color: whitesmoke;
+}
+
+.left-content p {
+    font-size: 18px;
+    color: #d1d5db;
+    line-height: 1.7;
+}
+
+/* RIGHT PANEL – Scrollable */
+.right-panel {
+    width: 40%;
+    background: #111827;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;    /* Align to top */
+    padding: 40px 30px;
+    min-height: 100vh;
+    overflow-y: auto;           /* Allow right panel to scroll independently */
+}
+
+/* LOGIN BOX */
+.login-box {
+    width: 100%;
+    max-width: 420px;
+    padding-bottom: 40px;
+}
+
+.login-box h2 {
+    color: #e2e8f0;
+    font-size: 40px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    color: #9ca3af;
+    margin-bottom: 40px;
+}
+
+/* INPUT FIELDS – DARK THEME */
+.input-group-custom {
+    background: #1f2937;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    padding: 0 18px;
+    border: 1px solid transparent;
+    transition: 0.3s;
+}
+
+.input-group-custom:focus-within {
+    border-color: #22c55e;
+}
+
+.input-group-custom i {
+    color: #9ca3af;
+    font-size: 16px;
+    margin-right: 12px;
+}
+
+.input-group-custom input {
+    background: transparent !important;
+    color: #e2e8f0 !important;
+    border: none !important;
+    border-radius: 0;
+    padding: 16px 0;
+    width: 100%;
+    outline: none;
+    font-size: 16px;
+}
+
+.input-group-custom input::placeholder {
+    color: #64748b;
+}
+
+.input-group-custom input:focus {
+    outline: none;
+    border: none !important;
+    box-shadow: none;
+}
+
+/* Fix autofill white background */
+.input-group-custom input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px #1f2937 inset !important;
+    -webkit-text-fill-color: #e2e8f0 !important;
+}
+
+/* EXTRA OPTIONS */
+.extra-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #d1d5db;
+    font-size: 14px;
+    margin-bottom: 30px;
+}
+
+.extra-options a {
+    color: #22c55e;
+    text-decoration: none;
+}
+
+/* BUTTON */
+.btn-login {
+    width: 100%;
+    padding: 18px;
+    border: none;
+    border-radius: 15px;
+    background: #22c55e;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.btn-login:hover {
+    background: #16a34a;
+    transform: scale(1.01);
+}
+
+/* REGISTER TEXT */
+.register-text {
+    text-align: center;
+    margin-top: 30px;
+    color: #9ca3af;
+}
+
+.register-text a {
+    color: #22c55e;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* ============================================ */
+/* PLAN SELECTION CARDS                         */
+/* ============================================ */
+
+.plan-radio-label {
+    display: block;
+    cursor: pointer;
+    margin-bottom: 12px;
+    width: 100%;
+}
+
+.plan-radio-label .plan-radio {
+    display: none;
+}
+
+.plan-selection-card {
+    background: #1e293b;
+    border-radius: 12px;
+    padding: 16px 20px;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    color: white;
+}
+
+.plan-selection-card:hover {
+    border-color: #22c55e;
+    transform: scale(1.01);
+}
+
+.plan-selection-card.selected {
+    border-color: #22c55e;
+    background: #2d3748;
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.15);
+}
+
+.plan-selection-card h4 {
+    color: #e2e8f0;
+    font-weight: 600;
+}
+
+.plan-selection-card .price {
+    font-size: 22px;
+    font-weight: bold;
+    color: #22c55e;
+}
+
+.plan-selection-card .price span {
+    font-size: 13px;
+    color: #94a3b8;
+    font-weight: normal;
+}
+
+.plan-selection-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0 0 0;
+}
+
+.plan-selection-card ul li {
+    color: #cbd5e1;
+    font-size: 13px;
+    padding: 2px 0;
+}
+
+.plan-badge {
+    display: inline-block;
+    padding: 2px 12px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-left: 8px;
+}
+
+.plan-badge.popular {
+    background: #22c55e;
+    color: white;
+}
+
+/* Error message */
+#planError {
+    margin-top: 10px;
+    display: none;
+    font-size: 14px;
+    padding: 10px 15px;
+    border-radius: 10px;
+    background: #fef2f2;
+    color: #991b1b;
+    border-left: 4px solid #ef4444;
+}
+
+/* ============================================ */
+/* RESPONSIVE                                   */
+/* ============================================ */
+
+@media(max-width: 992px) {
+    .login-container {
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    .left-panel {
+        display: none;           /* Hide left panel on mobile */
+    }
+
+    .right-panel {
+        width: 100%;
+        min-height: 100vh;
+        padding: 30px 20px;
+        align-items: center;
+    }
+}

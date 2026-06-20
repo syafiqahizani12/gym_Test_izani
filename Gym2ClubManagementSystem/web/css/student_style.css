@@ -1,0 +1,30 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : 26 May 2026, 8:33:29 pm
+    Author     : DELL
+*/
+
+.checkin-box{
+    background:#1e293b;
+    padding:30px;
+    border-radius:20px;
+    text-align:center;
+    margin-bottom:30px;
+}
+
+.qr-image{
+    margin:20px 0;
+    border-radius:15px;
+}
+
+.btn-checkin{
+    background:#22c55e;
+    border:none;
+    padding:14px 30px;
+    border-radius:30px;
+    color:white;
+    font-weight:600;
+}
