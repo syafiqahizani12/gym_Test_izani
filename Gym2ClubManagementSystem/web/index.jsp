@@ -302,11 +302,11 @@
                     <div class="col-md-4">
                         <div class="trainer-card">
 
-                            <img src="https://images.unsplash.com/photo-1567013127542-490d757e6349?q=80&w=800"
+                            <img src="https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=800&q=80"
                                  class="img-fluid">
 
                             <div class="trainer-info">
-                                <h5>Muhammad Aidil</h5>
+                                <h5>Aidil Jazri</h5>
                                 <p>Strength Coach</p>
                             </div>
 
@@ -316,11 +316,11 @@
                     <div class="col-md-4">
                         <div class="trainer-card">
 
-                            <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=800"
+                            <img src="https://images.pexels.com/photos/414029/pexels-photo-414029.jpeg"
                                  class="img-fluid">
 
                             <div class="trainer-info">
-                                <h5>Sarah Lee</h5>
+                                <h5>Hazim Ihsan</h5>
                                 <p>Fitness Trainer</p>
                             </div>
 
@@ -334,7 +334,7 @@
                                  class="img-fluid">
 
                             <div class="trainer-info">
-                                <h5>Hazim Ihsan</h5>
+                                <h5>Sarah Ramzan</h5>
                                 <p>Cardio Specialist</p>
                             </div>
 
